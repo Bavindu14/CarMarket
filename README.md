@@ -45,6 +45,9 @@ Feel free to fork this repository, make improvements, and submit pull requests.
 ## License
 [Add license if applicable, e.g., MIT License]
 
-## Group 6
+## Group 8
+Bavindu Gunasinghe	226044G
+Ravindu Weerasekara	226133E
+Naveen Sandeepa	226067E
 
 
