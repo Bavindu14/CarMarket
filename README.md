@@ -46,8 +46,8 @@ Feel free to fork this repository, make improvements, and submit pull requests.
 [Add license if applicable, e.g., MIT License]
 
 ## Group 8
-Bavindu Gunasinghe	226044G
-Ravindu Weerasekara	226133E
-Naveen Sandeepa	226067E
+Bavindu Gunasinghe (226044G)
+Ravindu Weerasekara (226133E)
+Naveen Sandeepa	(226067E)
 
 
