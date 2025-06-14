@@ -1,0 +1,8 @@
+{
+  "python.analysis.extraPaths": [
+    "C:\\Users\\ranak\\OneDrive\\Desktop\\CarMarket\\venv\\Lib\\site-packages"
+  ],
+  "python.analysis.disabled": [
+    "reportMissingModuleSource"
+  ]
+}

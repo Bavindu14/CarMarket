@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+{% load humanize %}
+
+{% block content %}
+<div class="container my-4">
+    <h2>{{ vehicle.make }} {{ vehicle.model }} ({{ vehicle.year }})</h2>
+    <div class="row">
+        <div class="col-md-6">
+            {% if vehicle.image and vehicle.image.url %}
+                <img src="{{ vehicle.image.url }}" class="img-fluid" alt="{{ vehicle.make }} {{ vehicle.model }}">
+            {% else %}
+                <img src="https://via.placeholder.com/300x200?text=No+Image+Available" class="img-fluid" alt="No image available">
+            {% endif %}
+        </div>
+        <div class="col-md-6">
+            <p><strong>Starting Price:</strong> ${{ vehicle.starting_price|floatformat:2|intcomma }}</p>
+            <p><strong>Description:</strong> {{ vehicle.description|default:"No description provided" }}</p>
+            <p><strong>Mileage:</strong> {{ vehicle.mileage|default:"N/A" }} km</p>
+            <p><strong>Condition:</strong> {{ vehicle.condition|default:"N/A" }}</p>
+            <p><strong>Transmission:</strong> {{ vehicle.transmission|default:"N/A" }}</p>
+            {% if user == vehicle.owner or user.is_staff %}
+                <h5 class="mt-3">Owner's Contact Details</h5>
+                <p><strong>Phone:</strong> {{ vehicle.owner_phone|default:"Not provided" }}</p>
+                <p><strong>Email:</strong> {{ vehicle.owner_email|default:"Not provided" }}</p>
+            {% endif %}
+            {% if user == vehicle.owner %}
+                <a href="{% url 'vehicle_edit' vehicle.pk %}" class="btn btn-warning btn-sm mt-3">Edit</a>
+                <a href="{% url 'vehicle_delete' vehicle.pk %}" class="btn btn-danger btn-sm">Delete</a>
+            {% elif user.is_authenticated %}
+                <form method="post" class="mt-3">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <button type="submit" class="btn btn-primary btn-sm">Place Bid</button>
+                </form>
+            {% endif %}
+        </div>
+    </div>
+    <h3>Bids</h3>
+    {% if bids %}
+        <ul class="list-group">
+            {% for bid in bids %}
+                <li class="list-group-item">Bid by {{ bid.bidder.username }}: ${{ bid.max_price|floatformat:2|intcomma }} ({{ bid.created_at|date:"F d, Y" }})</li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No bids yet.</p>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% load humanize %}
+
+{% block content %}
+<div class="container my-4">
+    <div class="card shadow-sm p-4" style="max-width: 500px; margin: 0 auto;">
+        <h2 class="text-center mb-4">Delete Vehicle</h2>
+        <p>Are you sure you want to delete "{{ vehicle.make }} {{ vehicle.model }} ({{ vehicle.year }})"? This action cannot be undone.</p>
+        <form method="post">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger w-100">Yes, Delete</button>
+        </form>
+        <a href="{% url 'vehicle_detail' vehicle.pk %}" class="btn btn-secondary mt-3 w-100">Cancel</a>
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} mt-3">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

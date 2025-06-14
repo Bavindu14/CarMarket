@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% load humanize %}
+
+{% block content %}
+<div class="container my-4">
+    <h2 class="mb-4">Available Vehicles</h2>
+    <div class="input-group mb-3" style="max-width: 400px;">
+        <form method="get" action="{% url 'vehicle_list' %}" class="w-100">
+            <div class="input-group">
+                <input type="text" class="form-control" name="q" placeholder="Search by make, model, or year" value="{{ request.GET.q|default:'' }}" aria-label="Search vehicles">
+                <button type="submit" class="btn btn-primary ms-2" style="white-space: nowrap;">Search</button>
+            </div>
+        </form>
+    </div>
+    <div class="row row-cols-1 row-cols-md-3 g-4">
+        {% for vehicle in vehicles %}
+        <div class="col">
+            <div class="card h-100 shadow-sm">
+                {% if vehicle.image and vehicle.image.url %}
+                    <img src="{{ vehicle.image.url }}" class="card-img-top" alt="{{ vehicle.make }} {{ vehicle.model }}" style="object-fit: cover; height: 200px;">
+                {% else %}
+                    <img src="https://via.placeholder.com/300x200?text=No+Image+Available" class="card-img-top" alt="No image available" style="object-fit: cover; height: 200px; background-color: #f8f9fa;">
+                {% endif %}
+                <div class="card-body">
+                    <h5 class="card-title">{{ vehicle.make }} {{ vehicle.model }} ({{ vehicle.year }})</h5>
+                    <p class="card-text">Starting Price: ${{ vehicle.starting_price|floatformat:2|intcomma }}</p>
+                    {% if user == vehicle.owner %}
+                        <div class="d-flex gap-2 mb-2">
+                            <a href="{% url 'vehicle_edit' vehicle.pk %}" class="btn btn-warning btn-sm" style="width: 80px;">Edit</a>
+                            <a href="{% url 'vehicle_delete' vehicle.pk %}" class="btn btn-danger btn-sm" style="width: 80px;">Delete</a>
+                        </div>
+                    {% endif %}
+                    <a href="{% url 'vehicle_detail' vehicle.pk %}" class="btn btn-primary btn-sm" style="width: 80px;">View Details</a>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <p>No vehicles available.</p>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

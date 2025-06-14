@@ -1,0 +1,141 @@
+{% extends 'base.html' %}
+{% load humanize %}
+
+{% block content %}
+<div class="container my-4">
+    <div class="card shadow-sm p-4" style="max-width: 700px; margin: 0 auto;">
+        <h2 class="card-title text-center mb-4 text-primary">Edit Vehicle</h2>
+        <form method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
+            {% csrf_token %}
+            <div class="row g-3">
+                <!-- Vehicle Basics Section -->
+                <div class="col-12">
+                    <h5 class="mb-3 text-muted">Vehicle Basics</h5>
+                    <div class="row g-2">
+                        <div class="col-md-6">
+                            <label for="id_make" class="form-label">Make <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="id_make" name="make" value="{{ form.instance.make }}" required>
+                            <div class="invalid-feedback">Please enter the vehicle make (e.g., Toyota).</div>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="id_model" class="form-label">Model <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="id_model" name="model" value="{{ form.instance.model }}" required>
+                            <div class="invalid-feedback">Please enter the vehicle model (e.g., Premio).</div>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="id_year" class="form-label">Year <span class="text-danger">*</span></label>
+                            <input type="number" class="form-control" id="id_year" name="year" value="{{ form.instance.year }}" min="1900" max="{{ current_year }}" required>
+                            <div class="invalid-feedback">Please enter a valid year (1900 to {{ current_year }}).</div>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="id_starting_price" class="form-label">Starting Price ($) <span class="text-danger">*</span></label>
+                            <input type="number" step="0.01" class="form-control" id="id_starting_price" name="starting_price" value="{{ form.instance.starting_price|floatformat:2 }}" min="0" required>
+                            <div class="invalid-feedback">Please enter a valid price (e.g., 20000.00).</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Vehicle Details Section -->
+                <div class="col-12">
+                    <h5 class="mb-3 text-muted">Vehicle Details</h5>
+                    <div class="row g-2">
+                        <div class="col-md-6">
+                            <label for="id_mileage" class="form-label">Mileage (km)</label>
+                            <input type="number" class="form-control" id="id_mileage" name="mileage" value="{{ form.instance.mileage|default_if_none:'' }}" min="0">
+                            <small class="text-muted">Enter mileage in kilometers (optional).</small>
+                            <div class="invalid-feedback">Please enter a valid mileage (e.g., 120000).</div>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="id_condition" class="form-label">Condition <span class="text-danger">*</span></label>
+                            <select class="form-select" id="id_condition" name="condition" required>
+                                <option value="Used" {% if form.instance.condition == 'Used' %}selected{% endif %}>Used</option>
+                                <option value="New" {% if form.instance.condition == 'New' %}selected{% endif %}>New</option>
+                                <option value="Certified Pre-Owned" {% if form.instance.condition == 'Certified Pre-Owned' %}selected{% endif %}>Certified Pre-Owned</option>
+                            </select>
+                            <div class="invalid-feedback">Please select a condition.</div>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="id_transmission" class="form-label">Transmission <span class="text-danger">*</span></label>
+                            <select class="form-select" id="id_transmission" name="transmission" required>
+                                <option value="Automatic" {% if form.instance.transmission == 'Automatic' %}selected{% endif %}>Automatic</option>
+                                <option value="Manual" {% if form.instance.transmission == 'Manual' %}selected{% endif %}>Manual</option>
+                            </select>
+                            <div class="invalid-feedback">Please select a transmission type.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Description and Images Section -->
+                <div class="col-12">
+                    <h5 class="mb-3 text-muted">Description & Images</h5>
+                    <div class="row g-2">
+                        <div class="col-12">
+                            <label for="id_description" class="form-label">Description <span class="text-danger">*</span></label>
+                            <textarea class="form-control" id="id_description" name="description" rows="4" required>{{ form.instance.description }}</textarea>
+                            <small class="text-muted">Provide details about the vehicle (e.g., condition, features).</small>
+                            <div class="invalid-feedback">Please enter a description.</div>
+                        </div>
+                        <div class="col-12">
+                            <label for="id_image" class="form-label">Primary Image <span class="text-danger">*</span></label>
+                            {% if form.instance.image %}
+                                <p>Current Image: <a href="{{ form.instance.image.url }}" target="_blank">{{ form.instance.image.url }}</a> <a href="#" class="text-danger" id="clear-primary-image">Clear</a></p>
+                            {% endif %}
+                            <input type="file" class="form-control" id="id_image" name="image" accept="image/*">
+                            <small class="text-muted">Upload or update the primary image (required).</small>
+                        </div>
+                        <div class="col-12">
+                            <h6>Additional Images</h6>
+                            {{ formset.management_form }}
+                            {% for form in formset %}
+                                <div class="mb-3">
+                                    {{ form.image.label_tag }}
+                                    {{ form.image }}
+                                    {% if form.instance.id %}
+                                        <p>Current Image: <a href="{{ form.instance.image.url }}" target="_blank">{{ form.instance.image.url }}</a> <a href="#" class="text-danger" onclick="this.parentElement.parentElement.querySelector('input[type=checkbox][name*=DELETE]').checked=true; this.parentElement.style.display='none';">Remove</a></p>
+                                    {% endif %}
+                                    {% if form.errors %}
+                                        {% for error in form.errors %}
+                                            <div class="invalid-feedback d-block">{{ error }}</div>
+                                        {% endfor %}
+                                    {% endif %}
+                                </div>
+                            {% endfor %}
+                            <small class="text-muted">Upload up to 3 additional images (optional).</small>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Contact Information Section -->
+                <div class="col-12">
+                    <h5 class="mb-3 text-muted">Contact Information</h5>
+                    <div class="row g-2">
+                        <div class="col-md-6">
+                            <label for="id_owner_phone" class="form-label">Owner Phone</label>
+                            <input type="tel" class="form-control" id="id_owner_phone" name="owner_phone" value="{{ form.instance.owner_phone|default_if_none:'' }}" pattern="[0-9]{10}" placeholder="e.g., 1234567890">
+                            <small class="text-muted">Enter a 10-digit phone number (optional).</small>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="id_owner_email" class="form-label">Owner Email</label>
+                            <input type="email" class="form-control" id="id_owner_email" name="owner_email" value="{{ form.instance.owner_email|default_if_none:'' }}" placeholder="e.g., owner@example.com">
+                            <small class="text-muted">Enter a contact email (optional).</small>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Submit Section -->
+                <div class="col-12">
+                    <button type="submit" class="btn btn-primary w-100 mb-2">Save Changes</button>
+                    <a href="{% url 'vehicle_detail' vehicle.pk %}" class="btn btn-secondary w-100">Cancel</a>
+                </div>
+            </div>
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }} mt-3" role="alert">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        </form>
+    </div>
+</div>
+{% endblock %}
